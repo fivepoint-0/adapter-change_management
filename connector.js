@@ -99,13 +99,13 @@ class ServiceNowConnector {
             }
         } else {
             log.debug('CONNECTOR ||| THE INSTANCE IS ALIVE')
-            callbackData = 'ServiceNow API is now ready and is no longer hibernating.'
+            callbackData = JSON.parse(response.body)
             callbackError = null
         }
 
         log.debug('CONNECTOR ||| PROCESSED REQUEST RESULTS. CALLING BACK.')
 
-        return callback(callbackData, callbackError);
+        callback(callbackData, callbackError);
     }
 
     /**
