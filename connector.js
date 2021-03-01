@@ -82,18 +82,28 @@ class ServiceNowConnector {
          * This function must not check for a hibernating instance;
          * it must call function isHibernating.
          */
-        if (error) {
-            console.error('Error present.');
-            callbackError = error;
-        } else if (!validResponseRegex.test(response.statusCode)) {
-            console.error('Bad response code.');
-            callbackError = response;
-        } else if (response.body.includes('Instance Hibernating page')) {
-            callbackError = 'Service Now instance is hibernating';
-            console.error(callbackError);
+        let callbackData
+        let callbackError
+
+        log.debug('CONNECTOR ||| PROCESSING REQUEST RESULTS')
+
+        if (!validResponseRegex.test(response.statusCode)) {
+            if (this.isHibernating()) {
+                log.debug('CONNECTOR ||| THE INSTANCE IS HIBERNATING')
+                callbackError = 'ServiceNow API not ready and is hibernating.'
+                callbackData = null
+            } else {
+                log.debug('CONNECTOR ||| SERVICENOW API THROWING NON-2XX CODE.')
+                callbackError = 'CONNECTOR ||| ServiceNow API is throwing an error.'
+                callbackData = null
+            }
         } else {
-            callbackData = response;
+            log.debug('CONNECTOR ||| THE INSTANCE IS ALIVE')
+            callbackData = 'ServiceNow API is now ready and is no longer hibernating.'
+            callbackError = null
         }
+
+        log.debug('CONNECTOR ||| PROCESSED REQUEST RESULTS. CALLING BACK.')
 
         return callback(callbackData, callbackError);
     }
@@ -130,6 +140,7 @@ class ServiceNowConnector {
         let getCallOptions = { ...this.options };
         getCallOptions.method = 'GET';
         getCallOptions.query = 'sysparm_limit=1';
+        log.debug('CONNECTOR ||| SENDING this.sendRequest(getCallOptions, (results, error) => callback(results, error)) ')
         this.sendRequest(getCallOptions, (results, error) => callback(results, error));
     }
     /**
@@ -186,7 +197,7 @@ class ServiceNowConnector {
             }
         };
 
-        console.log('REQUEST OPTIONS', requestOptions)
+        log.debug('CONNECTOR ||| GOT REQUEST OPTIONS. SENDING REQUEST.')
 
         request(this.options.url + uri, requestOptions, (error, response, body) => {
             this.processRequestResults(error, response, body, (processedResults, processedError) => callback(processedResults, processedError));

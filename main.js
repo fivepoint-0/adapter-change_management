@@ -80,7 +80,7 @@ class ServiceNowAdapter extends EventEmitter {
     connect() {
         // As a best practice, Itential recommends isolating the health check action
         // in its own method.
-        this.healthcheck();
+        this.healthcheck(() => {});
     }
 
     /**
@@ -94,6 +94,8 @@ class ServiceNowAdapter extends EventEmitter {
    *   that handles the response.
    */
     healthcheck(callback) {
+        log.debug('ADAPTER ||| NOW PERFORMING HEALTH CHECK')
+
         this.getRecord((result, error) => {
             /**
              * For this lab, complete the if else conditional
@@ -102,6 +104,8 @@ class ServiceNowAdapter extends EventEmitter {
              * the blocks for each branch.
              */
             if (error) {
+                log.debug('ADAPTER ||| RECORD ERROR')
+
                 /**
                  * Write this block.
                  * If an error was returned, we need to emit OFFLINE.
@@ -122,6 +126,8 @@ class ServiceNowAdapter extends EventEmitter {
                      callback(null, error)
                  }
             } else {
+                log.debug('ADAPTER ||| RECORD RETRIEVE SUCCESS')
+
                 /**
                  * Write this block.
                  * If no runtime problems were detected, emit ONLINE.
@@ -187,14 +193,14 @@ class ServiceNowAdapter extends EventEmitter {
      *   handles the response.
      */
     getRecord(callback) {
-        /**
-         * Write the body for this function.
-         * The function is a wrapper for this.connector's get() method.
-         * Note how the object was instantiated in the constructor().
-         * get() takes a callback function.
-         */
+        log.debug('ADAPTER ||| NOW GETTING RECORD')
 
-        return this.connector.get(callback)
+        this.connector.get((data, error) => {
+            log.debug(data)
+            log.debug('ADAPTER ||| PROCESSING RECORD')
+
+            callback(data, error)
+        })
     }
 
     /**
@@ -207,14 +213,9 @@ class ServiceNowAdapter extends EventEmitter {
      *   handles the response.
      */
     postRecord(callback) {
-        /**
-         * Write the body for this function.
-         * The function is a wrapper for this.connector's post() method.
-         * Note how the object was instantiated in the constructor().
-         * post() takes a callback function.
-         */
-
-        return this.connector.post(callback)
+        this.connector.post((data, error) => {
+            callback(data, error)
+        })
     }
 }
 
