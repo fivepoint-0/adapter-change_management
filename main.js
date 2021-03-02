@@ -239,7 +239,34 @@ class ServiceNowAdapter extends EventEmitter {
      */
     postRecord(callback) {
         this.connector.post((data, error) => {
-            callback(data, error)
+            log.debug('ADAPTER ||| DATA' + JSON.stringify(data))
+            log.debug('ADAPTER ||| ERROR' + JSON.stringify(error))
+            if (error) {
+                log.error('ADAPTER ||| ERROR PROCESSING RECORD')
+                callback(null, error)
+            } else {
+
+                log.debug('ADAPTER ||| PROCESSING RECORD')
+
+                if (!!data) {
+                    let response = data.map(element => {
+                        return {
+                            change_ticket_number: element.number,
+                            active: element.active,
+                            priority: element.priority,
+                            description: element.description,
+                            work_start: element.work_start,
+                            work_end: element.work_end,
+                            change_ticket_key: element.sys_id
+                        }
+                    })
+                    log.debug('ADAPTER ||| MAPPED DATA')
+                    log.debug(response)
+                    log.debug('ADAPTER ||| RECORD RETRIEVE SUCCESS')
+                    callback(response, null)
+                    
+                }
+            }
         })
     }
 }
