@@ -87,20 +87,20 @@ class ServiceNowConnector {
 
         log.debug('CONNECTOR ||| PROCESSING REQUEST RESULTS')
 
-        if (!validResponseRegex.test(response.statusCode)) {
-            if (this.isHibernating()) {
-                log.debug('CONNECTOR ||| THE INSTANCE IS HIBERNATING')
-                callbackError = 'ServiceNow API not ready and is hibernating.'
-                callbackData = null
-            } else {
+        if (this.isHibernating(response)) {
+            log.debug('CONNECTOR ||| THE INSTANCE IS HIBERNATING')
+            callbackError = 'ServiceNow API not ready and is hibernating.'
+            callbackData = null
+        } else {
+            if (!validResponseRegex.test(response.statusCode)) {
                 log.debug('CONNECTOR ||| SERVICENOW API THROWING NON-2XX CODE.')
                 callbackError = 'CONNECTOR ||| ServiceNow API is throwing an error.'
                 callbackData = null
+            } else {
+                log.debug('CONNECTOR ||| THE INSTANCE IS ALIVE')
+                callbackData = JSON.parse(response.body)
+                callbackError = null
             }
-        } else {
-            log.debug('CONNECTOR ||| THE INSTANCE IS ALIVE')
-            callbackData = JSON.parse(response.body)
-            callbackError = null
         }
 
         log.debug('CONNECTOR ||| PROCESSED REQUEST RESULTS. CALLING BACK.')
