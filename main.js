@@ -222,6 +222,7 @@ class ServiceNowAdapter extends EventEmitter {
                     log.debug(response)
                     log.debug('ADAPTER ||| RECORD RETRIEVE SUCCESS')
                     callback(response, null)
+                    
                 }
             }
         })
