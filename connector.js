@@ -98,7 +98,26 @@ class ServiceNowConnector {
                 callbackData = null
             } else {
                 log.debug('CONNECTOR ||| THE INSTANCE IS ALIVE')
-                callbackData = JSON.parse(response.body)
+
+                let data = JSON.parse(response.body)
+                let result = data.result
+
+                log.debug('CONNECTOR ||| DATA: '+ JSON.stringify(data))
+                log.debug('CONNECTOR ||| RESULT: '+ JSON.stringify(result))
+                let callbackData = result.map(res => {
+                    return {
+                        number: res.number,
+                        active: res.active,
+                        priority: res.priority,
+                        description: res.description,
+                        work_start: res.work_start,
+                        work_end: res.work_end,
+                        sys_id: res.sys_id
+                    }
+                })
+                log.debug('CONNECTOR ||| CALLBACKDATA: '+ JSON.stringify(callbackData))
+
+
                 callbackError = null
             }
         }

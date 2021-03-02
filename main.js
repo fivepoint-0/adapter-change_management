@@ -80,7 +80,7 @@ class ServiceNowAdapter extends EventEmitter {
     connect() {
         // As a best practice, Itential recommends isolating the health check action
         // in its own method.
-        this.healthcheck(() => {});
+        this.healthcheck(() => { });
     }
 
     /**
@@ -118,13 +118,13 @@ class ServiceNowAdapter extends EventEmitter {
                  * healthcheck(), execute it passing the error seen as an argument
                  * for the callback's errorMessage parameter.
                  */
-                 this.emitOffline()
-                 
-                 log.error(this.id.toString() + ":" + error)
-                 
-                 if (callback) {
-                     callback(null, error)
-                 }
+                this.emitOffline()
+
+                log.error(this.id.toString() + ":" + error)
+
+                if (callback) {
+                    callback(null, error)
+                }
             } else {
                 log.debug('ADAPTER ||| RECORD RETRIEVE SUCCESS')
 
@@ -138,9 +138,9 @@ class ServiceNowAdapter extends EventEmitter {
                  * parameter as an argument for the callback function's
                  * responseData parameter.
                  */
-                 this.emitOnline()
-                 log.debug('ServiceNow health-check success!')
-                 callback(result, null)
+                this.emitOnline()
+                log.debug('ServiceNow health-check success!')
+                callback(result, null)
             }
         });
     }
@@ -199,6 +199,17 @@ class ServiceNowAdapter extends EventEmitter {
             log.debug(data)
             log.debug('ADAPTER ||| PROCESSING RECORD')
 
+            if (data) {
+                data = {
+                    change_ticket_number: data.number,
+                    active: data.active,
+                    priority: data.priority,
+                    description: data.description,
+                    work_start: data.work_start,
+                    work_end: data.work_end,
+                    change_ticket_key: data.sys_id
+                }
+            }
             callback(data, error)
         })
     }
