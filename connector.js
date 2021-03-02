@@ -89,21 +89,20 @@ class ServiceNowConnector {
 
         if (this.isHibernating(response)) {
             log.debug('CONNECTOR ||| THE INSTANCE IS HIBERNATING')
-            callbackError = 'ServiceNow API not ready and is hibernating.'
-            callbackData = null
+            callback(null, 'ServiceNow API not ready and is hibernating.')
         } else {
             if (!validResponseRegex.test(response.statusCode)) {
                 log.debug('CONNECTOR ||| SERVICENOW API THROWING NON-2XX CODE.')
-                callbackError = 'CONNECTOR ||| ServiceNow API is throwing an error.'
-                callbackData = null
+                callback(null, 'CONNECTOR ||| ServiceNow API is throwing an error.')
             } else {
                 log.debug('CONNECTOR ||| THE INSTANCE IS ALIVE')
 
                 let data = JSON.parse(response.body)
                 let result = data.result
 
-                log.debug('CONNECTOR ||| DATA: '+ JSON.stringify(data))
-                log.debug('CONNECTOR ||| RESULT: '+ JSON.stringify(result))
+                log.debug('CONNECTOR ||| DATA: ' + JSON.stringify(data))
+                log.debug('CONNECTOR ||| RESULT: ' + JSON.stringify(result))
+
                 let callbackData = result.map(res => {
                     return {
                         number: res.number,
@@ -115,16 +114,14 @@ class ServiceNowConnector {
                         sys_id: res.sys_id
                     }
                 })
-                log.debug('CONNECTOR ||| CALLBACKDATA: '+ JSON.stringify(callbackData))
 
+                log.debug('CONNECTOR ||| CALLBACKDATA: ' + JSON.stringify(callbackData))
 
-                callbackError = null
+                log.debug('CONNECTOR ||| PROCESSED REQUEST RESULTS. CALLING BACK.')
+                callback(callbackData, null)
             }
         }
 
-        log.debug('CONNECTOR ||| PROCESSED REQUEST RESULTS. CALLING BACK.')
-
-        callback(callbackData, callbackError);
     }
 
     /**

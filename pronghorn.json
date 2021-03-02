@@ -44,7 +44,7 @@
                 "description": "A changeTicket object to create",
                 "schema": {
                     "title": "changeTicket",
-                    "$ref": "changeRequest#/definitions/changeTicket"  
+                    "$ref": "changeRequest#/definitions/changeTicket"
                 }
             },
             "roles": [
