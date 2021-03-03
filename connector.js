@@ -100,22 +100,31 @@ class ServiceNowConnector {
                 let data = JSON.parse(response.body)
                 let result = data.result
 
-                log.debug('CONNECTOR ||| DATA: ' + JSON.stringify(data))
-                log.debug('CONNECTOR ||| RESULT: ' + JSON.stringify(result))
+                let callbackData;
+                if (Array.isArray(result)) {
 
-                let callbackData = result.map(res => {
-                    return {
-                        number: res.number,
-                        active: res.active,
-                        priority: res.priority,
-                        description: res.description,
-                        work_start: res.work_start,
-                        work_end: res.work_end,
-                        sys_id: res.sys_id
+                    callbackData = result.map(res => {
+                        return {
+                            number: res.number,
+                            active: res.active,
+                            priority: res.priority,
+                            description: res.description,
+                            work_start: res.work_start,
+                            work_end: res.work_end,
+                            sys_id: res.sys_id
+                        }
+                    })
+                } else {
+                    callbackData = {
+                        number: result.number,
+                        active: result.active,
+                        priority: result.priority,
+                        description: result.description,
+                        work_start: result.work_start,
+                        work_end: result.work_end,
+                        sys_id: result.sys_id
                     }
-                })
-
-                log.debug('CONNECTOR ||| CALLBACKDATA: ' + JSON.stringify(callbackData))
+                }
 
                 log.debug('CONNECTOR ||| PROCESSED REQUEST RESULTS. CALLING BACK.')
                 callback(callbackData, null)

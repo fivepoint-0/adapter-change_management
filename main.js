@@ -139,7 +139,7 @@ class ServiceNowAdapter extends EventEmitter {
                  * responseData parameter.
                  */
                 this.emitOnline()
-                log.debug('ServiceNow health-check success!')
+                log.debug('ADAPTER ||| HEALTH CHECK SUCCESS!')
                 callback(result, null)
             }
         });
@@ -155,7 +155,7 @@ class ServiceNowAdapter extends EventEmitter {
      */
     emitOffline() {
         this.emitStatus('OFFLINE');
-        log.warn('ServiceNow: Instance is unavailable.');
+        log.warn('ADAPTER ||| INSTANCE UNAVAILABLE.');
     }
 
     /**
@@ -167,7 +167,7 @@ class ServiceNowAdapter extends EventEmitter {
      */
     emitOnline() {
         this.emitStatus('ONLINE');
-        log.info('ServiceNow: Instance is available.');
+        log.info('ADAPTER ||| INSTANCE NOW AVAILABLE.');
     }
 
     /**
@@ -193,12 +193,8 @@ class ServiceNowAdapter extends EventEmitter {
      *   handles the response.
      */
     getRecord(callback) {
-        log.debug('ADAPTER ||| NOW GETTING RECORD')
-
         this.connector.get((data, error) => {
 
-            log.debug('ADAPTER ||| DATA' + JSON.stringify(data))
-            log.debug('ADAPTER ||| ERROR' + JSON.stringify(error))
             if (error) {
                 log.error('ADAPTER ||| ERROR PROCESSING RECORD')
                 callback(null, error)
@@ -218,11 +214,9 @@ class ServiceNowAdapter extends EventEmitter {
                             change_ticket_key: element.sys_id
                         }
                     })
-                    log.debug('ADAPTER ||| MAPPED DATA')
-                    log.debug(response)
+                    
                     log.debug('ADAPTER ||| RECORD RETRIEVE SUCCESS')
                     callback(response, null)
-                    
                 }
             }
         })
@@ -238,9 +232,8 @@ class ServiceNowAdapter extends EventEmitter {
      *   handles the response.
      */
     postRecord(callback) {
-        this.connector.post((data, error) => {
-            log.debug('ADAPTER ||| DATA' + JSON.stringify(data))
-            log.debug('ADAPTER ||| ERROR' + JSON.stringify(error))
+        this.connector.post(null, (data, error) => {
+            log.debug('ADAPTER ||| POST CALLBACK CALLLED')
             if (error) {
                 log.error('ADAPTER ||| ERROR PROCESSING RECORD')
                 callback(null, error)
@@ -249,22 +242,19 @@ class ServiceNowAdapter extends EventEmitter {
                 log.debug('ADAPTER ||| PROCESSING RECORD')
 
                 if (!!data) {
-                    let response = data.map(element => {
-                        return {
-                            change_ticket_number: element.number,
-                            active: element.active,
-                            priority: element.priority,
-                            description: element.description,
-                            work_start: element.work_start,
-                            work_end: element.work_end,
-                            change_ticket_key: element.sys_id
-                        }
-                    })
-                    log.debug('ADAPTER ||| MAPPED DATA')
-                    log.debug(response)
-                    log.debug('ADAPTER ||| RECORD RETRIEVE SUCCESS')
-                    callback(response, null)
+                    let response = {
+                        change_ticket_number: data.number,
+                        active: data.active,
+                        priority: data.priority,
+                        description: data.description,
+                        work_start: data.work_start,
+                        work_end: data.work_end,
+                        change_ticket_key: data.sys_id
+                    }
                     
+                    log.debug('ADAPTER ||| RECORD POST SUCCESS')
+                    callback(response, null)
+
                 }
             }
         })
